@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="section-label">Supplier Performance Dashboard</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Supplier</th>
+                <th>Recent Components</th>
+                <th>Avg Lead Time</th>
+                <th>Price Range</th>
+                <th>Last Communication</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for supplier in suppliers %}
+            <tr>
+                <td>
+                    <strong>{{ supplier.name }}</strong><br>
+                    <span style="font-size: 12px; color: #b0aea5;">{{ supplier.contact_name }}</span><br>
+                    <a href="mailto:{{ supplier.email }}" style="font-size: 12px; color: #6a9bcc;">{{ supplier.email }}</a>
+                </td>
+                <td>
+                    <div style="font-size: 12px; color: #4a4845;">
+                        {% for comp in supplier.recent_components[:3] %}
+                        • {{ comp }}<br>
+                        {% endfor %}
+                        {% if supplier.recent_components|length > 3 %}
+                        <span style="color: #b0aea5;">+{{ supplier.recent_components|length - 3 }} more</span>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>{{ supplier.avg_lead_time_weeks }} weeks</td>
+                <td style="font-family: monospace;">
+                    ${{ "%.0f"|format(supplier.price_range_min) }} - ${{ "%.0f"|format(supplier.price_range_max) }}
+                </td>
+                <td>{{ supplier.last_communication }}</td>
+                <td>
+                    {% if supplier.performance_rating >= 4.5 %}
+                        <span class="badge badge-green">Excellent</span>
+                    {% elif supplier.performance_rating >= 3.5 %}
+                        <span class="badge badge-blue">Good</span>
+                    {% elif supplier.performance_rating >= 2.5 %}
+                        <span class="badge badge-yellow">Fair</span>
+                    {% else %}
+                        <span class="badge badge-red">Poor</span>
+                    {% endif %}
+                    <div style="font-size: 11px; color: #b0aea5; margin-top: 2px;">
+                        ⭐ {{ "%.1f"|format(supplier.performance_rating) }}/5.0
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Quick Stats -->
+<div class="metrics-row" style="margin-top: 32px;">
+    <div class="metric-card">
+        <div class="metric-value">{{ suppliers|length }}</div>
+        <div class="metric-label">Total Suppliers</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">
+            {{ (suppliers|selectattr('performance_rating', '>=', 4.0)|list|length) }}
+        </div>
+        <div class="metric-label">High-Performing</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">
+            {{ "%.1f"|format(suppliers|map(attribute='avg_lead_time_weeks')|average) }}w
+        </div>
+        <div class="metric-label">Avg Lead Time</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">
+            ${{ "%.0f"|format(suppliers|map(attribute='price_range_max')|max) }}
+        </div>
+        <div class="metric-label">Highest Quote</div>
+    </div>
+</div>
+{% endblock %}

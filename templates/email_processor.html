@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="section-label">AI Email Processor</div>
+
+<div class="two-col">
+    <!-- Input Panel -->
+    <div>
+        <div class="card">
+            <h3 style="color: #141413; margin-bottom: 16px;">Paste Supplier Email</h3>
+            <form id="emailForm" onsubmit="processEmail(event)">
+                <label class="field-label">Email Content</label>
+                <textarea id="emailContent" placeholder="Paste supplier email here...">{{ example_email }}</textarea>
+                
+                <button type="submit" class="btn-primary" id="processBtn">
+                    ⚡ Process with AI
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Panel -->
+    <div>
+        <div class="card">
+            <h3 style="color: #141413; margin-bottom: 16px;">AI Analysis Results</h3>
+            <div id="results">
+                <div class="empty-state" style="text-align: center; color: #b0aea5; padding: 48px; font-size: 14px;">
+                    Fill in the email content and click "Process with AI" to see extraction results
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function processEmail(event) {
+    event.preventDefault();
+    
+    const emailContent = document.getElementById('emailContent').value;
+    const processBtn = document.getElementById('processBtn');
+    const results = document.getElementById('results');
+    
+    if (!emailContent.trim()) {
+        alert('Please enter some email content first');
+        return;
+    }
+    
+    // Show loading state
+    processBtn.innerHTML = '⏳ Processing...';
+    processBtn.disabled = true;
+    results.innerHTML = `
+        <div class="loading-state">
+            <div style="font-size:32px; margin-bottom:12px;">⏳</div>
+            Processing with Claude AI...
+        </div>
+    `;
+    
+    try {
+        const formData = new FormData();
+        formData.append('email_content', emailContent);
+        
+        const response = await fetch('/process-email', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            displayResults(data.analysis);
+        } else {
+            results.innerHTML = `
+                <div class="alert alert-error">
+                    Error: ${data.detail || 'Processing failed'}
+                </div>
+            `;
+        }
+    } catch (error) {
+        results.innerHTML = `
+            <div class="alert alert-error">
+                Network error: ${error.message}
+            </div>
+        `;
+    } finally {
+        processBtn.innerHTML = '⚡ Process with AI';
+        processBtn.disabled = false;
+    }
+}
+
+function displayResults(analysis) {
+    const results = document.getElementById('results');
+    
+    let componentsHtml = '';
+    if (analysis.components && analysis.components.length > 0) {
+        componentsHtml = analysis.components.map(comp => `
+            <tr>
+                <td>${comp.name || 'N/A'}</td>
+                <td style="font-family: monospace; font-size: 12px;">${comp.part_number || 'N/A'}</td>
+                <td>${comp.quantity || 'N/A'}</td>
+                <td style="font-family: monospace;">
+                    ${comp.unit_price ? '$' + comp.unit_price.toFixed(2) : 'Pending'}
+                </td>
+                <td>${comp.lead_time_weeks || 'TBD'} weeks</td>
+            </tr>
+        `).join('');
+    } else {
+        componentsHtml = '<tr><td colspan="5" style="text-align: center; color: #b0aea5;">No components identified</td></tr>';
+    }
+    
+    const priorityBadge = getPriorityBadge(analysis.priority_level);
+    const actionBadge = getActionBadge(analysis.action_required);
+    
+    results.innerHTML = `
+        <!-- Summary Card -->
+        <div style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div>
+                    <strong>${analysis.supplier_name || 'Unknown Supplier'}</strong>
+                    <div style="font-size: 12px; color: #b0aea5;">${analysis.email_type || 'general'}</div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    ${priorityBadge}
+                    ${actionBadge}
+                </div>
+            </div>
+            <p style="font-size: 14px; color: #4a4845; margin-bottom: 16px;">
+                ${analysis.summary || 'No summary available'}
+            </p>
+        </div>
+        
+        <!-- Components Table -->
+        ${analysis.components && analysis.components.length > 0 ? `
+        <div class="section-label">Extracted Components</div>
+        <div class="table-wrapper" style="margin-bottom: 20px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Part #</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Lead Time</th>
+                    </tr>
+                </thead>
+                <tbody>${componentsHtml}</tbody>
+            </table>
+        </div>
+        ` : ''}
+        
+        <!-- AI-Generated Response -->
+        <div class="section-label">AI-Generated Response</div>
+        <div style="background: #f0efe9; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <pre style="white-space: pre-wrap; font-family: 'Open Sans', sans-serif; font-size: 14px; color: #4a4845; margin: 0;">${analysis.suggested_response || 'No response generated'}</pre>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 12px;">
+            <button class="btn-primary" onclick="alert('Would send response to supplier')">
+                Send Response
+            </button>
+            <button class="btn-secondary" onclick="alert('Would save to QuickBooks')">
+                Save to QuickBooks
+            </button>
+            <button class="btn-secondary" onclick="alert('Would update SharePoint')">
+                Update Files
+            </button>
+        </div>
+    `;
+}
+
+function getPriorityBadge(priority) {
+    switch(priority) {
+        case 'urgent': return '<span class="badge badge-red">Urgent</span>';
+        case 'high': return '<span class="badge badge-orange">High</span>';
+        case 'medium': return '<span class="badge badge-yellow">Medium</span>';
+        case 'low': return '<span class="badge badge-green">Low</span>';
+        default: return '<span class="badge badge-gray">Unknown</span>';
+    }
+}
+
+function getActionBadge(action) {
+    switch(action) {
+        case 'response_needed': return '<span class="badge badge-orange">Response Needed</span>';
+        case 'follow_up_needed': return '<span class="badge badge-blue">Follow Up</span>';
+        case 'info_only': return '<span class="badge badge-green">Info Only</span>';
+        default: return '<span class="badge badge-gray">Review</span>';
+    }
+}
+</script>
+{% endblock %}

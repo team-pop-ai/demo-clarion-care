@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Clarion Care AI Supply Chain Coordinator{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: #faf9f5;
+            color: #4a4845;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, button, label, .label, nav, .badge, th {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .app-header {
+            background: #ffffff;
+            border-bottom: 1px solid #e8e6dc;
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            color: #141413;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: #4a4845;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover {
+            color: #d97757;
+        }
+
+        .nav-links a.active {
+            color: #d97757;
+            font-weight: 600;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e8e6dc;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-subtle {
+            background: #f0efe9;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .btn-primary {
+            background: #d97757;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 22px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary:hover { background: #b85e3a; }
+
+        .btn-secondary {
+            background: #f0efe9;
+            color: #141413;
+            border: 1px solid #e8e6dc;
+            border-radius: 8px;
+            padding: 10px 22px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-secondary:hover { background: #e8e6dc; }
+
+        .section-label {
+            font-family: 'Roboto', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: #b0aea5;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 14px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .badge-green  { color: #788c5d; background: #e8eddf; }
+        .badge-orange { color: #d97757; background: #f5e6df; }
+        .badge-blue   { color: #6a9bcc; background: #e3eef7; }
+        .badge-yellow { color: #c4973a; background: #fdf3dd; }
+        .badge-red    { color: #c0463a; background: #fce8e7; }
+        .badge-gray   { color: #b0aea5; background: #f0efe9; }
+
+        .metrics-row { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 16px; 
+            margin-bottom: 24px; 
+        }
+
+        .metric-card {
+            background: #ffffff;
+            border: 1px solid #e8e6dc;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            color: #141413;
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: #b0aea5;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+        }
+
+        .table-wrapper {
+            background: #ffffff;
+            border: 1px solid #e8e6dc;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+
+        th {
+            font-family: 'Roboto', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: #b0aea5;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e8e6dc;
+            background: #faf9f5;
+        }
+
+        td {
+            padding: 13px 16px;
+            font-size: 14px;
+            font-family: 'Open Sans', sans-serif;
+            border-bottom: 1px solid #f0efe9;
+            color: #4a4845;
+        }
+
+        tr:last-child td { 
+            border-bottom: none; 
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.connected { background: #788c5d; }
+        .status-dot.processing { background: #d97757; }
+        .status-dot.offline { background: #b0aea5; }
+
+        .loading-state {
+            text-align: center;
+            color: #d97757;
+            padding: 48px;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 15px;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        input, select, textarea {
+            background: #ffffff;
+            border: 1px solid #e8e6dc;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 14px;
+            color: #141413;
+            width: 100%;
+            outline: none;
+            margin-bottom: 16px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #d97757;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .field-label {
+            display: block;
+            font-family: 'Roboto', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: #b0aea5;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 7px;
+        }
+
+        .alert {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .alert-info { 
+            background: #e3eef7; 
+            border: 1px solid #b8d4eb; 
+            color: #4a6a8a; 
+        }
+        
+        .alert-success { 
+            background: #e8eddf; 
+            border: 1px solid #b8ccaa; 
+            color: #4a6a3a; 
+        }
+
+        hr { 
+            border: none; 
+            border-top: 1px solid #e8e6dc; 
+            margin: 24px 0; 
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 18px;">🏥</span>
+            <span>Clarion Care AI Supply Chain</span>
+        </div>
+        
+        <nav class="nav-links">
+            <a href="/" class="{% if request.url.path == '/' %}active{% endif %}">Dashboard</a>
+            <a href="/email-processor" class="{% if request.url.path == '/email-processor' %}active{% endif %}">Email Processor</a>
+            <a href="/suppliers" class="{% if request.url.path == '/suppliers' %}active{% endif %}">Suppliers</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

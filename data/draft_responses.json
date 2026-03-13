@@ -1,0 +1,32 @@
+[
+  {
+    "id": "draft_001",
+    "supplier_name": "Precision Medical Supply Co",
+    "contact_email": "mrodriguez@precisionmed.com",
+    "subject": "Re: IP65 enclosure quote request - urgent timeline",
+    "draft_message": "Hi Michael,\n\nThank you for your email regarding the IP65 enclosure quote. We understand you're working on pricing for the ENC-IP65-L-001 units.\n\nGiven our timeline constraints, could you please prioritize this quote? We need 100 units and would appreciate pricing by end of this week if possible.\n\nAlso, please confirm if the 6-week lead time is firm or if there's any possibility to expedite a partial shipment.\n\nLooking forward to your response.\n\nBest regards,\nWesley Anderson\nClarion Care",
+    "priority": "urgent",
+    "generated_at": "2024-01-15T14:45:00",
+    "status": "ready_to_send"
+  },
+  {
+    "id": "draft_002", 
+    "supplier_name": "Apex Electronics Supply",
+    "contact_email": "lisa.w@apexelec.com",
+    "subject": "Re: Pressure sensor delay - alternative solutions needed",
+    "draft_message": "Hi Lisa,\n\nThanks for the update on the PS-MED-100K pressure sensors. The 12-week lead time is unfortunately too long for our current production schedule.\n\nCould you please check if:\n1. You have any similar pressure sensors with shorter lead times\n2. There's a possibility to prioritize our order for partial delivery\n3. You can recommend alternative suppliers for this component\n\nWe're flexible on specifications if it helps reduce the timeline.\n\nPlease let me know your thoughts.\n\nBest,\nWesley",
+    "priority": "urgent",
+    "generated_at": "2024-01-13T14:00:00", 
+    "status": "ready_to_send"
+  },
+  {
+    "id": "draft_003",
+    "supplier_name": "BioDevice Manufacturing Ltd",
+    "contact_email": "e.thompson@biodevice.co.uk",
+    "subject": "Re: Battery pack quote request - specifications clarification",
+    "draft_message": "Hi Emma,\n\nFollowing up on our battery pack quote request for the BAT-LI-3.7V-2200 units.\n\nCould you please provide:\n- Pricing for 200 units\n- Any volume discount tiers available\n- Confirmation of the 10-week lead time\n- Safety certifications included (UL, CE, etc.)\n\nWe're planning our production schedule and would appreciate your response by Friday.\n\nThanks!\nWesley Anderson",
+    "priority": "high",
+    "generated_at": "2024-01-12T09:15:00",
+    "status": "ready_to_send"
+  }
+]

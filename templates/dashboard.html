@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Status Alert -->
+<div class="alert alert-success">
+    <div class="status-dot connected"></div>
+    Connected to Microsoft Outlook • Last sync: 2 minutes ago
+</div>
+
+<!-- Key Metrics -->
+<div class="metrics-row">
+    <div class="metric-card">
+        <div class="metric-value">{{ total_suppliers }}</div>
+        <div class="metric-label">Active Suppliers</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ active_rfqs }}</div>
+        <div class="metric-label">Pending Quotes</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ overdue_items }}</div>
+        <div class="metric-label">Urgent Items</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ time_saved }}h</div>
+        <div class="metric-label">Time Saved This Week</div>
+    </div>
+</div>
+
+<div class="two-col">
+    <!-- Supplier Comparison -->
+    <div>
+        <div class="section-label">Live Supplier Dashboard</div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Supplier</th>
+                        <th>Component</th>
+                        <th>Price</th>
+                        <th>Lead Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in parsed_data[:8] %}
+                    <tr>
+                        <td>
+                            <strong>{{ item.supplier_name }}</strong><br>
+                            <span style="font-size: 12px; color: #b0aea5;">{{ item.contact_email }}</span>
+                        </td>
+                        <td>
+                            {{ item.component_name }}<br>
+                            <span style="font-size: 12px; color: #b0aea5; font-family: monospace;">{{ item.part_number or 'N/A' }}</span>
+                        </td>
+                        <td style="font-family: monospace;">
+                            {% if item.unit_price %}
+                                ${{ "%.2f"|format(item.unit_price) }}
+                            {% else %}
+                                <span style="color: #b0aea5;">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.lead_time_weeks }}w</td>
+                        <td>
+                            {% if item.status == 'quoted' %}
+                                <span class="badge badge-blue">Quoted</span>
+                            {% elif item.status == 'pending_quote' %}
+                                <span class="badge badge-yellow">Pending Quote</span>
+                            {% elif item.status == 'ordered' %}
+                                <span class="badge badge-green">Ordered</span>
+                            {% elif item.status == 'delayed' %}
+                                <span class="badge badge-red">Delayed</span>
+                            {% else %}
+                                <span class="badge badge-gray">{{ item.status }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Activity & Draft Responses -->
+    <div>
+        <div class="section-label">AI-Generated Draft Responses</div>
+        {% for draft in draft_responses %}
+        <div class="card">
+            <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 12px;">
+                <div>
+                    <strong>To: {{ draft.supplier_name }}</strong><br>
+                    <span style="font-size: 13px; color: #b0aea5;">Re: {{ draft.subject }}</span>
+                </div>
+                <span class="badge badge-orange">Ready to Send</span>
+            </div>
+            <div style="font-size: 14px; color: #4a4845; margin-bottom: 16px;">
+                {{ draft.draft_message[:120] }}...
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-primary" style="padding: 6px 16px; font-size: 12px;">Send</button>
+                <button class="btn-secondary" style="padding: 6px 16px; font-size: 12px;">Edit</button>
+            </div>
+        </div>
+        {% endfor %}
+
+        <hr>
+
+        <div class="section-label">Recent Activity</div>
+        <div class="card">
+            {% for activity in recent_activity %}
+            <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; {% if not loop.last %}border-bottom: 1px solid #f0efe9;{% endif %}">
+                <div style="color: #d97757; font-size: 16px;">
+                    {% if activity.type == 'email_processed' %}⚡{% endif %}
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-size: 13px; color: #4a4845;">{{ activity.description }}</div>
+                    <div style="font-size: 12px; color: #b0aea5;">{{ activity.time }}</div>
+                </div>
+                <span class="badge badge-green">✓</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card" style="text-align: center; background: #f0efe9;">
+    <h3 style="color: #141413; margin-bottom: 16px;">Process New Supplier Email</h3>
+    <p style="margin-bottom: 20px; color: #4a4845;">Paste any supplier email to see AI extraction and auto-response in action</p>
+    <a href="/email-processor" class="btn-primary" style="padding: 12px 24px; font-size: 15px;">Try Email Processor →</a>
+</div>
+{% endblock %}
